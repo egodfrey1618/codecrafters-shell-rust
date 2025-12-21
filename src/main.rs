@@ -1,8 +1,8 @@
 use std::io;
 use std::io::Write;
 
-enum Command {
-    Command(String),
+struct Command {
+    command: String,
 }
 
 fn read_command() -> Result<Command, io::Error> {
@@ -11,7 +11,9 @@ fn read_command() -> Result<Command, io::Error> {
 
     let without_newline = s.trim().to_string();
 
-    Ok(Command::Command(without_newline))
+    Ok(Command {
+        command: without_newline,
+    })
 }
 
 fn main() {
@@ -19,7 +21,5 @@ fn main() {
     io::stdout().flush().expect("Error when flushing stdout");
     let command = read_command().expect("IO error when reading command");
 
-    match command {
-        Command::Command(s) => print!("{s}: command not found"),
-    }
+    print!("{}: command not found", command.command);
 }
