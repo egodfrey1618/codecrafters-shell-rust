@@ -16,10 +16,19 @@ fn read_command() -> Result<Command, io::Error> {
     })
 }
 
-fn main() {
+fn print_prompt() -> Result<(), io::Error> {
     print!("$ ");
-    io::stdout().flush().expect("Error when flushing stdout");
-    let command = read_command().expect("IO error when reading command");
+    io::stdout().flush()
+}
 
-    print!("{}: command not found", command.command);
+fn eval_command(command: &Command) {
+    println!("{}: command not found", command.command);
+}
+
+fn main() {
+    loop {
+        print_prompt().expect("IO error when printing prompt");
+        let command = read_command().expect("IO error when reading command");
+        eval_command(&command);
+    }
 }
