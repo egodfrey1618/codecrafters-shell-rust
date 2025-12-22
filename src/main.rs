@@ -1,9 +1,9 @@
+mod command;
+mod eval;
+use crate::command::Command;
+use crate::eval::{EvalResult, eval_command};
 use std::io;
 use std::io::Write;
-
-struct Command {
-    command: String,
-}
 
 fn read_command() -> Result<Command, io::Error> {
     let mut s = String::new();
@@ -21,14 +21,15 @@ fn print_prompt() -> Result<(), io::Error> {
     io::stdout().flush()
 }
 
-fn eval_command(command: &Command) {
-    println!("{}: command not found", command.command);
-}
-
 fn main() {
     loop {
         print_prompt().expect("IO error when printing prompt");
         let command = read_command().expect("IO error when reading command");
-        eval_command(&command);
+        match eval_command(&command) {
+            EvalResult::Continue => (),
+            EvalResult::Exit => {
+                break;
+            }
+        }
     }
 }
