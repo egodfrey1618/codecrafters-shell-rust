@@ -1,4 +1,4 @@
-use crate::command::Command;
+use crate::command::{BuiltInCommand, Command};
 
 pub enum EvalResult {
     /// Result of evaluating a command - this just tells the REPL whether
@@ -7,29 +7,30 @@ pub enum EvalResult {
     Exit,
 }
 
-pub fn handle_unknown_command(command: &Command) {
-    println!("{}: command not found", command.command)
+fn eval_exe(exe: &String, _args: &[String]) -> EvalResult {
+    println!("{}: command not found", exe);
+    EvalResult::Continue
 }
 
 /// Handle echo command - this function can assume we've already checked the command.
-pub fn eval_echo(command: &Command) {
-    let output = command.args.join(" ");
+fn eval_echo(args: &[String]) -> EvalResult {
+    let output = args.join(" ");
     println!("{}", output);
+    EvalResult::Continue
+}
+
+fn eval_builtin(command: &BuiltInCommand) -> EvalResult {
+    match command {
+        BuiltInCommand::Echo { args } => eval_echo(args),
+        BuiltInCommand::Type { .. } => todo!(),
+        BuiltInCommand::Exit => EvalResult::Exit,
+    }
 }
 
 pub fn eval_command(command: &Command) -> EvalResult {
-    match command.command.as_str() {
-        // Built-ins
-        "exit" => EvalResult::Exit,
-        "" => EvalResult::Continue,
-        "echo" => {
-            eval_echo(command);
-            EvalResult::Continue
-        }
-        // Anything else.
-        _ => {
-            handle_unknown_command(command);
-            EvalResult::Continue
-        }
+    match command {
+        Command::Empty => EvalResult::Continue,
+        Command::BuiltIn(c) => eval_builtin(c),
+        Command::Executable { exe, args } => eval_exe(exe, args),
     }
 }
