@@ -8,21 +8,34 @@ pub enum EvalResult {
 }
 
 fn eval_exe(exe: &String, _args: &[String]) -> EvalResult {
-    println!("{}: command not found", exe);
+    println!("{exe}: command not found");
     EvalResult::Continue
 }
 
-/// Handle echo command - this function can assume we've already checked the command.
 fn eval_echo(args: &[String]) -> EvalResult {
     let output = args.join(" ");
-    println!("{}", output);
+    println!("{output}");
+    EvalResult::Continue
+}
+
+fn eval_type(inner_command: &Command) -> EvalResult {
+    match inner_command {
+        Command::BuiltIn(built_in) => {
+            let name = built_in.to_variant_str();
+            println!("{name} is a shell builtin");
+        }
+        Command::Executable { exe, args: _ } => {
+            println!("{exe}: command not found")
+        }
+        Command::Empty => (),
+    };
     EvalResult::Continue
 }
 
 fn eval_builtin(command: &BuiltInCommand) -> EvalResult {
     match command {
         BuiltInCommand::Echo { args } => eval_echo(args),
-        BuiltInCommand::Type { .. } => todo!(),
+        BuiltInCommand::Type { command } => eval_type(command),
         BuiltInCommand::Exit => EvalResult::Exit,
     }
 }

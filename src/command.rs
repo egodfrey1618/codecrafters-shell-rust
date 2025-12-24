@@ -1,9 +1,19 @@
 use std::io;
 
 pub enum BuiltInCommand {
-    Type { _command: Box<Command> },
+    Type { command: Box<Command> },
     Echo { args: Vec<String> },
     Exit,
+}
+
+impl BuiltInCommand {
+    pub fn to_variant_str(&self) -> &'static str {
+        match self {
+            BuiltInCommand::Type { .. } => "type",
+            BuiltInCommand::Echo { .. } => "echo",
+            BuiltInCommand::Exit => "exit",
+        }
+    }
 }
 
 pub enum Command {
@@ -20,7 +30,7 @@ fn parse_command(words: &[&str]) -> Command {
             "type" => {
                 let inner_command = parse_command(&words[1..]);
                 Command::BuiltIn(BuiltInCommand::Type {
-                    _command: Box::new(inner_command),
+                    command: Box::new(inner_command),
                 })
             }
             "echo" => {
