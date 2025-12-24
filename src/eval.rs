@@ -25,7 +25,7 @@ fn eval_type(inner_command: &Command) -> EvalResult {
             println!("{name} is a shell builtin");
         }
         Command::Executable { exe, args: _ } => {
-            println!("{exe}: command not found")
+            println!("{exe}: not found")
         }
         Command::Empty => (),
     };
