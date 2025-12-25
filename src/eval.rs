@@ -26,7 +26,7 @@ fn path_is_executable_file(path: &PathBuf) -> bool {
     // not quite the same as executable by the current process.
     // Curious to find out what Bash does here!
     // (It's also Linux-specific.)
-    metadata.is_file() && (metadata.st_mode() & 0o11 != 0)
+    metadata.is_file() && (metadata.st_mode() & 0o111 != 0)
 }
 
 /// Given the first string of a command, try and parse it to a path on disk
